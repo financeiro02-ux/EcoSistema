@@ -413,8 +413,8 @@ CSS = """
 .step h2{font-size:20px;font-weight:600;margin:0;padding:0;line-height:1.2}
 /* cards de empresa */
 div[class*="st-key-card_"]{position:relative;gap:0!important}
-div[class*="st-key-card_"] [data-testid="stElementContainer"]{margin:0}
-div[class*="st-key-card_"] [data-testid="stButton"]{position:absolute;inset:0;z-index:3}
+div[class*="st-key-card_"] [data-testid="stElementContainer"]{margin:0;position:static!important}
+div[class*="st-key-card_"] [data-testid="stButton"]{position:absolute;inset:0;z-index:3;width:100%;height:100%}
 div[class*="st-key-card_"] [data-testid="stButton"] button{width:100%;height:100%;opacity:0;cursor:pointer}
 .co{border:2px solid transparent;border-radius:14px;overflow:hidden;background:rgba(128,128,128,.13);transition:border-color .15s,transform .15s}
 .co.sel{border-color:currentColor}
