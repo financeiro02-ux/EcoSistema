@@ -338,7 +338,7 @@ def build_pdf(company, rows, label) -> bytes:
                Paragraph("Valor Total", th_r), Paragraph("% do Total", th_r)]]
     for p, x in by_project(rows):
         pct = (x["v"] / total * 100) if total else 0
-        resumo.append([Paragraph(f"<b>{esc(p)}</b>", cell), Paragraph(str(x["q"]), cell_c),
+        resumo.append([Paragraph(f"<b>{esc('-' if p == 'Sem projeto' else p)}</b>", cell), Paragraph(str(x["q"]), cell_c),
                        Paragraph(brl(x["v"]), cell_r),
                        Paragraph(f"{pct:.1f}".replace(".", ",") + "%", cell_r)])
     t2 = Table(resumo, colWidths=[86 * mm, 30 * mm, 35 * mm, avail - 151 * mm], repeatRows=1)
@@ -371,7 +371,7 @@ def preview_html(company, rows, label):
     resumo = ""
     for p, x in by_project(rows):
         pct = f"{(x['v'] / total * 100 if total else 0):.1f}".replace(".", ",")
-        resumo += (f'<tr><td class="proj" style="text-align:left">{esc(p)}</td><td class="c">{x["q"]}</td>'
+        resumo += (f'<tr><td class="proj" style="text-align:left">{"-" if p == "Sem projeto" else esc(p)}</td><td class="c">{x["q"]}</td>'
                    f'<td class="r">{brl(x["v"])}</td><td class="r">{pct}%</td></tr>')
     return f"""
 <style>
