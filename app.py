@@ -211,7 +211,13 @@ def load_rows(raw: bytes):
         }
         if item["rs"] or item["val"]:
             rows.append(item)
-    rows.sort(key=lambda x: (x["rs"].casefold(), x["cat"].casefold()))
+    tot = {}
+    for x in rows:
+        tot[x["proj"]] = tot.get(x["proj"], 0.0) + x["val"]
+    # agrupa por projeto (maior valor primeiro) e deixa "Sem projeto" no fim;
+    # dentro de cada grupo, ordem alfabética de fornecedor
+    rows.sort(key=lambda x: (x["proj"] == "Sem projeto", -tot[x["proj"]], x["proj"].casefold(),
+                             x["rs"].casefold(), x["cat"].casefold()))
     return rows, label
 
 
@@ -331,6 +337,8 @@ def build_pdf(company, rows, label) -> bytes:
     for i, r in enumerate(rows, start=1):
         if r["proj"] != "Sem projeto":
             style.append(("BACKGROUND", (2, i), (2, i), lite))
+        if i < len(rows) and rows[i]["proj"] != r["proj"]:
+            style.append(("LINEBELOW", (0, i), (-1, i), 1.3, brand))
     t1 = Table(body, colWidths=widths, repeatRows=1)
     t1.setStyle(TableStyle(style))
 
@@ -365,9 +373,9 @@ def preview_html(company, rows, label):
             if company.get("logo_b64") else f'<b style="font-size:26px">{company["name"]}</b>')
     esc = lambda s: s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     trs = "".join(
-        f'<tr><td>{esc(r["rs"])}</td><td class="c">{esc(r["cat"]).replace(chr(10), "<br>")}</td>'
+        f'<tr{" class=grp" if i < len(rows) - 1 and rows[i + 1]["proj"] != r["proj"] else ""}><td>{esc(r["rs"])}</td><td class="c">{esc(r["cat"]).replace(chr(10), "<br>")}</td>'
         f'<td class="c proj{" none" if r["proj"] == "Sem projeto" else ""}">{"-" if r["proj"] == "Sem projeto" else esc(r["proj"])}</td>'
-        f'<td class="r">{brl(r["val"])}</td></tr>' for r in rows)
+        f'<td class="r">{brl(r["val"])}</td></tr>' for i, r in enumerate(rows))
     resumo = ""
     for p, x in by_project(rows):
         pct = f"{(x['v'] / total * 100 if total else 0):.1f}".replace(".", ",")
@@ -383,7 +391,7 @@ def preview_html(company, rows, label):
 .paper td{{padding:6px 10px;border-bottom:1px solid #e4e2dd}}
 .c{{text-align:center}} .r{{text-align:right;white-space:nowrap}} th.c{{text-align:center}} th.r{{text-align:right}}
 td.proj{{background:{soft_hex};font-weight:600;text-align:center}} td.proj.none{{background:transparent;font-weight:400;color:#959595}}
-tr.total td{{border:0}} tr.total td.tl{{background:{brand};color:{ink};font-weight:700}}
+tr.total td{{border:0}} tr.grp td{{border-bottom:2px solid {brand}}} tr.total td.tl{{background:{brand};color:{ink};font-weight:700}}
 .paper h3{{margin:26px 0 8px;font-size:16px}} .scroll{{overflow-x:auto}}
 </style>
 <div class="paper">
