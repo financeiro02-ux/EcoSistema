@@ -228,7 +228,7 @@ def by_project(rows):
         x = m.setdefault(r["proj"], {"q": 0, "v": 0.0})
         x["q"] += 1
         x["v"] += r["val"]
-    return sorted(m.items(), key=lambda kv: -kv[1]["v"])
+    return sorted(m.items(), key=lambda kv: (kv[0] == "Sem projeto", -kv[1]["v"]))  # "-" sempre por último
 
 
 # ---------------------------------------------------------------- PDF
