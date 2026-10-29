@@ -339,6 +339,7 @@ def build_pdf(company, rows, label) -> bytes:
             style.append(("BACKGROUND", (2, i), (2, i), lite))
         if i < len(rows) and rows[i]["proj"] != r["proj"]:
             style.append(("LINEBELOW", (0, i), (-1, i), 1.3, brand))
+            style.append(("TOPPADDING", (0, i + 1), (-1, i + 1), 11))  # respiro após a divisória
     t1 = Table(body, colWidths=widths, repeatRows=1)
     t1.setStyle(TableStyle(style))
 
@@ -391,7 +392,7 @@ def preview_html(company, rows, label):
 .paper td{{padding:6px 10px;border-bottom:1px solid #e4e2dd}}
 .c{{text-align:center}} .r{{text-align:right;white-space:nowrap}} th.c{{text-align:center}} th.r{{text-align:right}}
 td.proj{{background:{soft_hex};font-weight:600;text-align:center}} td.proj.none{{background:transparent;font-weight:400;color:#959595}}
-tr.total td{{border:0}} tr.grp td{{border-bottom:2px solid {brand}}} tr.total td.tl{{background:{brand};color:{ink};font-weight:700}}
+tr.total td{{border:0}} tr.grp td{{border-bottom:2px solid {brand}}} tr.grp+tr td{{padding-top:18px}} tr.total td.tl{{background:{brand};color:{ink};font-weight:700}}
 .paper h3{{margin:26px 0 8px;font-size:16px}} .scroll{{overflow-x:auto}}
 </style>
 <div class="paper">
