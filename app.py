@@ -315,7 +315,7 @@ def build_pdf(company, rows, label) -> bytes:
         sem = r["proj"] == "Sem projeto"
         body.append([Paragraph(esc(r["rs"]), cell),
                      Paragraph(esc(r["cat"]).replace("\n", "<br/>"), cell_c),
-                     Paragraph(esc(r["proj"]), cell_g if sem else cell_b),
+                     Paragraph("-" if sem else esc(r["proj"]), cell_g if sem else cell_b),
                      Paragraph(brl(r["val"]), cell_r)])
     body.append(["", "", Paragraph("Total", ParagraphStyle("t", parent=th_c)),
                  Paragraph(brl(total), th_r)])
@@ -366,7 +366,7 @@ def preview_html(company, rows, label):
     esc = lambda s: s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     trs = "".join(
         f'<tr><td>{esc(r["rs"])}</td><td class="c">{esc(r["cat"]).replace(chr(10), "<br>")}</td>'
-        f'<td class="c proj{" none" if r["proj"] == "Sem projeto" else ""}">{esc(r["proj"])}</td>'
+        f'<td class="c proj{" none" if r["proj"] == "Sem projeto" else ""}">{"-" if r["proj"] == "Sem projeto" else esc(r["proj"])}</td>'
         f'<td class="r">{brl(r["val"])}</td></tr>' for r in rows)
     resumo = ""
     for p, x in by_project(rows):
